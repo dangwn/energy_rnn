@@ -24,7 +24,7 @@ def get_sequences(
     keys,
     target_key : str,
     seq_len : int,
-    num_future_days = 1,
+    num_future_days = 1
 ):
     '''
     Returns sequences of features and their respective labels
