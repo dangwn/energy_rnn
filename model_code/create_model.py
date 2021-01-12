@@ -11,6 +11,10 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
+from ignite.engine import Events, create_supervised_trainer, create_supervised_evaluator
+from ignite.metrics import MeanSquaredError
+
+
 #%%
 #--------------------------------------------------------------------------------------------------
 # Model Class
@@ -54,7 +58,41 @@ class GRU(nn.Module):
 #--------------------------------------------------------------------------------------------------
 # Model Trainer Function 
 #--------------------------------------------------------------------------------------------------
+def train_model(
+    model,
+    trainloader,
+    testloader,
+    optimizer,
+    criterion,
+    val_metrics,
+    num_epochs,
+    device,
+    verbose = True,
+):
+    trainer = create_supervised_trainer(
+        model, optimizer, criterion, device = device
+    )
+    evaluator = create_supervised_evaluator(
+        model, metrics = val_metrics, device = device
+    )
 
+    if verbose:
+        @trainer.on(Events.EPOCH_STARTED)
+        def print_epoch(trainer):
+            s = f'Epoch: {trainer.state.epoch}'
+            print('================================')
+            print(s)
+        
+        @trainer.on(Events.EPOCH_COMPLETED)
+        def print_metrics(trainer):
+            evaluator.run(testloader)
+            metrics = evaluator.state.metrics
+            epoch_no = trainer.state.epoch
+            print(f'Metrics: {metrics}')
+    
+    trainer.run(trainloader, max_epochs = num_epochs)
+
+    
 
 #%%
 #--------------------------------------------------------------------------------------------------
@@ -62,19 +100,4 @@ class GRU(nn.Module):
 #--------------------------------------------------------------------------------------------------
 
 if __name__ == '__main__':
-    l = [[1,1,1],
-         [2,2,2]]
-
-    X = torch.tensor(l, dtype = torch.float32)
-    X = X.unsqueeze(0)
-
-    net = GRU(
-        input_size = 3,
-        gru_size = 64,
-        gru_layers = 3,
-        hidden_size = 32,
-        output_size = 1,
-    )
-
-    y = net(X)
-    print(y.item())
+    pass
