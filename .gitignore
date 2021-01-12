@@ -3,3 +3,4 @@ data
 __pycache__
 .vscode
 .pytest_cache
+ml_logs
