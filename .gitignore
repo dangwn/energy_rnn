@@ -1,2 +1,5 @@
 file_paths.yml
 data
+__pycache__
+.vscode
+.pytest_cache
