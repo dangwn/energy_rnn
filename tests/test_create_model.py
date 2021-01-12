@@ -27,7 +27,7 @@ def test_model_creation():
 
 
 def test_model_trainer():
-    
+    # Ensuring the model may be trained
     optimizer = torch.optim.SGD(net.parameters(), lr = 1e-3)
     criterion = torch.nn.MSELoss()
     val_metrics = {'MSE' : MeanSquaredError()}
@@ -43,8 +43,6 @@ def test_model_trainer():
         device = 'cpu',
         verbose = False
     )
-    
-    #Mainly ensuring the GRU can be constructed and data fed through
     y = net(X)
 
     #Ensure output tensor is of correct size
