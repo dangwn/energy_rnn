@@ -26,13 +26,15 @@ class GRU(nn.Module):
         gru_size,
         gru_layers,
         hidden_size,
-        output_size = 1
+        output_size = 1,
+        device = 'cpu'
     ):
         super().__init__()
         
         self.gru_size = gru_size
         self.gru_layers = gru_layers
         self.hidden_size = hidden_size
+        self.device = device
 
         self.gru = nn.GRU(
             input_size, gru_size, gru_layers, batch_first = True
@@ -44,7 +46,7 @@ class GRU(nn.Module):
     def forward(self, x):
         h0 = torch.zeros(
             self.gru_layers, x.size(0), self.gru_size
-        )
+        ).to(self.device)
 
         x , _ = self.gru(x, h0)
         

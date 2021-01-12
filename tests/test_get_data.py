@@ -28,7 +28,7 @@ def test_get_sequences():
     assert X.shape[2] == len(keys)
 
     # Ensure extra dimension is added to single key case
-    X,y = get_data.get_sequences(keys[0],'Wind',seq_len,num_future_days)
+    X,y = get_data.get_sequences(keys[0],'Wind',seq_len,num_future_days, shuffle = False)
     assert X.shape[2] == 1
 
     # Ensure the next day is the label

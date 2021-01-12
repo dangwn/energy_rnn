@@ -4,7 +4,6 @@ import torch.optim as optim
 
 from ignite.metrics import MeanSquaredError
 
-
 net = create_model.GRU(
     input_size = 3,
     gru_size = 32,
@@ -15,7 +14,7 @@ net = create_model.GRU(
 X = torch.randn(1,2,3)
 
 loader_data = [(torch.randn(2,3),torch.rand(1)) for i in range(5)]
-loader = torch.utils.data.DataLoader(loader_data, batch_size = 1) 
+loader = torch.utils.data.DataLoader(loader_data, batch_size = 1)
 
 
 def test_model_creation():
@@ -31,7 +30,7 @@ def test_model_trainer():
     optimizer = torch.optim.SGD(net.parameters(), lr = 1e-3)
     criterion = torch.nn.MSELoss()
     val_metrics = {'MSE' : MeanSquaredError()}
-
+    
     create_model.train_model(
         model = net,
         trainloader = loader,
