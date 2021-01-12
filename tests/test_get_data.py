@@ -1,3 +1,8 @@
+'''
+Author: Dan Gawne
+Date: 2021-01-12
+'''
+
 from model_code import get_data
 import pandas as pd
 import numpy as np
@@ -12,15 +17,19 @@ def test_pull_data():
 
 def test_get_sequences():
     keys = ['Wind','Solar']
-    num_future_days = 20
+    seq_len = 20
+    num_future_days = 4
 
-    X,y = get_data.get_sequences(keys,'Wind',num_future_days)
+    X,y = get_data.get_sequences(keys,'Wind',seq_len)
 
     # Check compatibility of dimensions of outputs
     assert X.shape[0] == y.shape[0]
-    assert X.shape[1] == num_future_days
+    assert X.shape[1] == seq_len
     assert X.shape[2] == len(keys)
 
     # Ensure extra dimension is added to single key case
-    X,y = get_data.get_sequences(keys[0],'Wind',num_future_days)
+    X,y = get_data.get_sequences(keys[0],'Wind',seq_len,num_future_days)
     assert X.shape[2] == 1
+
+    # Ensure the next day is the label
+    assert X[num_future_days,-1,0] == y[0]

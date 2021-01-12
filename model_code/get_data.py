@@ -26,6 +26,19 @@ def get_sequences(
     seq_len : int,
     num_future_days = 1,
 ):
+    '''
+    Returns sequences of features and their respective labels
+    =============================================================================================
+    Inputs:
+        - keys            : The columns in the data you want to use (str/array-like)
+        - target_key      : The target column to make the labels (str)
+        - seq_len         : The number of days in each sequence (int)
+        - num_future_days : The number of days into the future you want to predict (default = 1)
+    Outputs:
+        - X : Sequences of features
+        - y : Labels
+    =============================================================================================
+    '''
     if type(keys) == str:
         df = pull_data()[[keys]]
     else:
