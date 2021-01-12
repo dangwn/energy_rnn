@@ -26,8 +26,9 @@ class GRU(nn.Module):
         gru_size,
         gru_layers,
         hidden_size,
+        num_hidden = 0,
         output_size = 1,
-        device = 'cpu'
+        device = 'cpu',
     ):
         super().__init__()
         
@@ -35,12 +36,14 @@ class GRU(nn.Module):
         self.gru_layers = gru_layers
         self.hidden_size = hidden_size
         self.device = device
+        self.num_hidden = num_hidden
 
         self.gru = nn.GRU(
             input_size, gru_size, gru_layers, batch_first = True
         )
         
-        self.fc1 = nn.Linear(gru_size, hidden_size)
+        self.fc_in = nn.Linear(gru_size, hidden_size)
+        self.fc_hidden = nn.Linear(hidden_size,hidden_size)
         self.fc_out = nn.Linear(hidden_size, output_size)
 
     def forward(self, x):
@@ -51,8 +54,10 @@ class GRU(nn.Module):
         x , _ = self.gru(x, h0)
         
         out = x[:,-1,:]
-
-        out = F.relu(self.fc1(out))
+        for i in range(self.num_hidden):
+            out = F.relu(self.fc_hidden(out))
+        out = F.relu(self.fc_in(out))
+        
         return self.fc_out(out)
 
 
@@ -69,7 +74,7 @@ def train_model(
     val_metrics,
     num_epochs,
     device,
-    verbose = True,
+    verbose = True
 ):
     trainer = create_supervised_trainer(
         model, optimizer, criterion, device = device
@@ -77,6 +82,8 @@ def train_model(
     evaluator = create_supervised_evaluator(
         model, metrics = val_metrics, device = device
     )
+
+    metrics_to_return = 0
 
     if verbose:
         @trainer.on(Events.EPOCH_STARTED)
@@ -91,6 +98,8 @@ def train_model(
             metrics = evaluator.state.metrics
             epoch_no = trainer.state.epoch
             print(f'Metrics: {metrics}')
+            
     
     trainer.run(trainloader, max_epochs = num_epochs)
+
 

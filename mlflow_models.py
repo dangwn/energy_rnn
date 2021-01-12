@@ -86,27 +86,35 @@ testloader = torch.utils.data.DataLoader(testset, shuffle = True, batch_size = b
 #--------------------------------------------------------------------------------------------------
 # MLFlow Setup
 #--------------------------------------------------------------------------------------------------
-'''mlflow.set_tracking_uri(tracking_uri)
+mlflow.set_tracking_uri(tracking_uri)
 mlflow.set_experiment(experiment_name)
-num_experiments = 10'''
+num_experiments = 25
 
 #%%
 #--------------------------------------------------------------------------------------------------
 # Create and Train model
 #--------------------------------------------------------------------------------------------------
+gru_size = 64
+gru_layers = 3
+hidden_size = 64
+num_hidden = 1
+lr = 1e-3
+num_epochs = 10
+
 net = GRU(
     input_size = len(keys),
-    gru_size = 64,
-    gru_layers = 2,
-    hidden_size = 64,
+    gru_size = gru_size,
+    gru_layers = gru_layers,
+    hidden_size = hidden_size,
+    num_hidden = num_hidden,
     output_size = 1,
     device = device
 ).to(device)
 
-optimizer = torch.optim.Adam(net.parameters(), lr = 1e-3)
+optimizer = torch.optim.Adam(net.parameters(), lr = lr)
 criterion = torch.nn.MSELoss()
 val_metrics = {'MSE' : MeanSquaredError()}
-num_epochs = 10
+
 
 train_model(
     net,
@@ -118,6 +126,29 @@ train_model(
     num_epochs = num_epochs,
     device = device
 )
+
+total_loss = 0
+for t in testloader:
+    y_hat = net(t[0])
+    loss = torch.nn.MSELoss(reduction = 'none')
+    loss_result = torch.sum(loss(y_hat,t[1])).item()
+    total_loss += loss_result
+TestMSE = total_loss/(len(X_raw)-train_size)
+
+mlflow.log_param('gru_size',gru_size)
+mlflow.log_param('gru_layers',gru_layers)
+mlflow.log_param('hidden_size',hidden_size)
+mlflow.log_param('num_hidden',num_hidden)
+mlflow.log_param('lr',lr)
+mlflow.log_param('num_epochs',num_epochs)
+
+mlflow.log_metric('Test MSE',TestMSE)
+
+net.to('cpu')
+net.device = 'cpu'
+
+print(net.device)
+mlflow.pytorch.log_model(net,'model')
 
 #%%
 #--------------------------------------------------------------------------------------------------
