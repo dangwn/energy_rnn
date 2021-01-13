@@ -22,7 +22,7 @@ def pull_data():
     =============================================
     Inputs:
         None
-    Outputs:
+    Returns:
         df : A dataframe containing the data
     '''
     df =  pd.read_csv(data_dir)
@@ -45,7 +45,7 @@ def get_sequences(
         - seq_len         : The number of days in each sequence (int)
         - num_future_days : The number of days into the future you want to predict (default = 1)
         - shuffle         : Whether the sequences are shuffled
-    Outputs:
+    Returns:
         - X : Sequences of features
         - y : Labels
     =============================================
@@ -78,5 +78,4 @@ def get_sequences(
     if len(X.shape) == 2:
         X = np.expand_dims(X,-1)
 
-   
     return X,y

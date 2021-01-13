@@ -110,7 +110,7 @@ def train_model(
         - num_epochs  : The number of training epochs
         - device      : The device that your model/data loaders are on
         - verbose     : The verboisity of the training (default = True)
-    Outputs:
+    Returns:
         None
     '''
     trainer = create_supervised_trainer(
