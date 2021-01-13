@@ -88,7 +88,7 @@ testloader = torch.utils.data.DataLoader(testset, shuffle = True, batch_size = b
 mlflow.set_tracking_uri(tracking_uri)
 mlflow.set_experiment(experiment_name)
 num_experiments = 100
-"""
+
 #%%
 #--------------------------------------------------------------------------------------------------
 # Create and Train model
@@ -157,4 +157,3 @@ for i in range(num_experiments):
 
         mlflow.pytorch.log_model(net,'model')
 
-"""
