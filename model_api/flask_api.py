@@ -16,9 +16,7 @@ with open('api_file_paths.yml','r') as f:
     except yaml.YAMLError as e:
         print(e)
 
-cwd = file_paths['model_destination'][0]
-
-model_loc = r'file://' + os.path.join(os.getcwd(),'model').replace('\\','/')
-print(model_loc,'\n\n')
-model = mlflow.pytorch.load_model(model_loc)
+#torch.load('energy_model.pt')
+dir = r'file://' + os.path.join(os.getcwd(), 'model').replace('\\','/')
+model = mlflow.pytorch.load_model(dir)
 

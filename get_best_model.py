@@ -27,8 +27,4 @@ experiment_id = client.get_experiment_by_name(experiment_name).experiment_id
 runs = client.search_runs(experiment_id, order_by = ['metrics.Test_MSE'])
 
 best_run_id = runs[0].info.run_id
-client.download_artifacts(best_run_id, 'model', destination_folder + '/..')
-
-model = mlflow.pytorch.load_model(r'file://' + destination_folder + '/../model')
-torch.save(model, destination_folder + '/final_model.pt')
-
+client.download_artifacts(best_run_id, 'model', destination_folder)
