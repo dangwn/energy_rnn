@@ -81,31 +81,28 @@ testset = MyDataSet(X[train_size:],y[train_size:])
 trainloader = torch.utils.data.DataLoader(trainset, shuffle = True, batch_size = batch_size)
 testloader = torch.utils.data.DataLoader(testset, shuffle = True, batch_size = batch_size)
 
-print(next(iter(trainloader))[0].shape)
-
-
 #%%
 #--------------------------------------------------------------------------------------------------
 # MLFlow Setup
 #--------------------------------------------------------------------------------------------------
 mlflow.set_tracking_uri(tracking_uri)
 mlflow.set_experiment(experiment_name)
-num_experiments = 1
-
+num_experiments = 100
+"""
 #%%
 #--------------------------------------------------------------------------------------------------
 # Create and Train model
 #--------------------------------------------------------------------------------------------------
 for i in range(num_experiments):
     print('===========================')
-    print(f'Starting experiment [{i+1}]')        
+    print(f'Starting experiment [{i+1}/{num_experiments}]')        
     with mlflow.start_run():    
         gru_size = np.random.randint(32,129)
         gru_layers = np.random.randint(1,5)
         hidden_size = np.random.randint(32,129)
         num_hidden = np.random.randint(1,4)
-        lr = np.random.uniform(0,1e-3)
-        num_epochs = np.random.randint(5,16)
+        lr = np.random.uniform(0,5e-4)
+        num_epochs = np.random.randint(5,21)
 
         net = GRU(
             input_size = len(keys),
@@ -131,7 +128,8 @@ for i in range(num_experiments):
             criterion = criterion,
             val_metrics = val_metrics,
             num_epochs = num_epochs,
-            device = device
+            device = device,
+            verbose = False
         )
 
         total_loss = 0
@@ -141,7 +139,8 @@ for i in range(num_experiments):
             loss_result = torch.sum(loss(y_hat,t[1])).item()
             total_loss += loss_result
         TestMSE = total_loss/(len(X_raw)-train_size)
-        
+        print('Test MSE:', TestMSE)
+
         print('Logging artifacts')
 
         mlflow.log_param('gru_size',gru_size)
@@ -158,7 +157,4 @@ for i in range(num_experiments):
 
         mlflow.pytorch.log_model(net,'model')
 
-#%%
-#--------------------------------------------------------------------------------------------------
-# 
-#--------------------------------------------------------------------------------------------------
+"""
