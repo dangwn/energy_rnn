@@ -1,5 +1,4 @@
 from . import model_code
-#from . import tests
 from . import mlflow_models
 from . import model_api
 from . import get_best_model
