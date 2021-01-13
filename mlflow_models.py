@@ -45,7 +45,7 @@ with open('file_paths.yml','r') as f:
         print(e)
 
 tracking_uri = r'file:' + file_paths['tracking_uri'][0]
-experiment_name = 'German Power - GRU'
+experiment_name = f'German Power - GRU ({seq_len} Day)'
 
 #%%
 #--------------------------------------------------------------------------------------------------
