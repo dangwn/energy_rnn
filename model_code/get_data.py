@@ -17,6 +17,14 @@ with open('file_paths.yml','r') as f:
 data_dir = file_paths['data'][0]
 
 def pull_data():
+    '''
+    Pulls all data from the dataset, and makes the date the index
+    =============================================
+    Inputs:
+        None
+    Outputs:
+        df : A dataframe containing the data
+    '''
     df =  pd.read_csv(data_dir)
     df.set_index('Date', inplace = True)
     return df
@@ -30,7 +38,7 @@ def get_sequences(
 ):
     '''
     Returns sequences of features and their respective labels
-    =============================================================================================
+    =============================================
     Inputs:
         - keys            : The columns in the data you want to use (str/array-like)
         - target_key      : The target column to make the labels (str)
@@ -40,7 +48,7 @@ def get_sequences(
     Outputs:
         - X : Sequences of features
         - y : Labels
-    =============================================================================================
+    =============================================
     '''
     if type(keys) == str:
         df = pull_data()[[keys]]
@@ -71,8 +79,4 @@ def get_sequences(
         X = np.expand_dims(X,-1)
 
    
-
-
-
-
     return X,y
