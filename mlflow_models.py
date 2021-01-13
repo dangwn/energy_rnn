@@ -150,7 +150,7 @@ for i in range(num_experiments):
         mlflow.log_param('lr',lr)
         mlflow.log_param('num_epochs',num_epochs)
 
-        mlflow.log_metric('Test MSE',TestMSE)
+        mlflow.log_metric('Test_MSE',TestMSE)
 
         net.to('cpu')
         net.device = 'cpu'
