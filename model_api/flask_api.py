@@ -20,4 +20,3 @@ seq_len = 30
 experiment_name = f'German Power - GRU ({seq_len} Day)'
 
 # Get Model
-model = ml
