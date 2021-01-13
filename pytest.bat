@@ -1,0 +1,1 @@
+python -m pytest --ignore=model_api/deploy_model

@@ -83,77 +83,74 @@ testloader = torch.utils.data.DataLoader(testset, shuffle = True, batch_size = b
 
 #%%
 #--------------------------------------------------------------------------------------------------
-# MLFlow Setup
+# Create and Train model with MLFlow
 #--------------------------------------------------------------------------------------------------
-mlflow.set_tracking_uri(tracking_uri)
-mlflow.set_experiment(experiment_name)
-num_experiments = 100
+if __name__ == '__main__':
+    mlflow.set_tracking_uri(tracking_uri)
+    mlflow.set_experiment(experiment_name)
+    num_experiments = 100
 
-#%%
-#--------------------------------------------------------------------------------------------------
-# Create and Train model
-#--------------------------------------------------------------------------------------------------
-for i in range(num_experiments):
-    print('===========================')
-    print(f'Starting experiment [{i+1}/{num_experiments}]')        
-    with mlflow.start_run():    
-        gru_size = np.random.randint(32,129)
-        gru_layers = np.random.randint(1,5)
-        hidden_size = np.random.randint(32,129)
-        num_hidden = np.random.randint(1,4)
-        lr = np.random.uniform(0,5e-4)
-        num_epochs = np.random.randint(5,21)
+    for i in range(num_experiments):
+        print('===========================')
+        print(f'Starting experiment [{i+1}/{num_experiments}]')        
+        with mlflow.start_run():    
+            gru_size = np.random.randint(32,129)
+            gru_layers = np.random.randint(1,5)
+            hidden_size = np.random.randint(32,129)
+            num_hidden = np.random.randint(1,4)
+            lr = np.random.uniform(0,5e-4)
+            num_epochs = np.random.randint(5,21)
 
-        net = GRU(
-            input_size = len(keys),
-            gru_size = gru_size,
-            gru_layers = gru_layers,
-            hidden_size = hidden_size,
-            num_hidden = num_hidden,
-            output_size = 1,
-            device = device
-        ).to(device)
+            net = GRU(
+                input_size = len(keys),
+                gru_size = gru_size,
+                gru_layers = gru_layers,
+                hidden_size = hidden_size,
+                num_hidden = num_hidden,
+                output_size = 1,
+                device = device
+            ).to(device)
 
-        optimizer = torch.optim.Adam(net.parameters(), lr = lr)
-        criterion = torch.nn.MSELoss()
-        val_metrics = {'MSE' : MeanSquaredError()}
+            optimizer = torch.optim.Adam(net.parameters(), lr = lr)
+            criterion = torch.nn.MSELoss()
+            val_metrics = {'MSE' : MeanSquaredError()}
 
-        print('Training model...')
+            print('Training model...')
 
-        train_model(
-            net,
-            trainloader = trainloader,
-            testloader = testloader,
-            optimizer = optimizer,
-            criterion = criterion,
-            val_metrics = val_metrics,
-            num_epochs = num_epochs,
-            device = device,
-            verbose = False
-        )
+            train_model(
+                net,
+                trainloader = trainloader,
+                testloader = testloader,
+                optimizer = optimizer,
+                criterion = criterion,
+                val_metrics = val_metrics,
+                num_epochs = num_epochs,
+                device = device,
+                verbose = False
+            )
 
-        total_loss = 0
-        for t in testloader:
-            y_hat = net(t[0])
-            loss = torch.nn.MSELoss(reduction = 'none')
-            loss_result = torch.sum(loss(y_hat,t[1])).item()
-            total_loss += loss_result
-        TestMSE = total_loss/(len(X_raw)-train_size)
-        print('Test MSE:', TestMSE)
+            total_loss = 0
+            for t in testloader:
+                y_hat = net(t[0])
+                loss = torch.nn.MSELoss(reduction = 'none')
+                loss_result = torch.sum(loss(y_hat,t[1])).item()
+                total_loss += loss_result
+            TestMSE = total_loss/(len(X_raw)-train_size)
+            print('Test MSE:', TestMSE)
 
-        print('Logging artifacts')
+            print('Logging artifacts')
 
-        mlflow.log_param('gru_size',gru_size)
-        mlflow.log_param('gru_layers',gru_layers)
-        mlflow.log_param('hidden_size',hidden_size)
-        mlflow.log_param('num_hidden',num_hidden)
-        mlflow.log_param('lr',lr)
-        mlflow.log_param('num_epochs',num_epochs)
+            mlflow.log_param('gru_size',gru_size)
+            mlflow.log_param('gru_layers',gru_layers)
+            mlflow.log_param('hidden_size',hidden_size)
+            mlflow.log_param('num_hidden',num_hidden)
+            mlflow.log_param('lr',lr)
+            mlflow.log_param('num_epochs',num_epochs)
 
-        mlflow.log_metric('Test_MSE',TestMSE)
+            mlflow.log_metric('Test_MSE',TestMSE)
 
-        net.to('cpu')
-        net.device = 'cpu'
+            net.to('cpu')
+            net.device = 'cpu'
 
-        mlflow.pytorch.log_model(net,'model')
+            mlflow.pytorch.log_model(net,'model')
 

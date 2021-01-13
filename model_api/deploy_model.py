@@ -14,5 +14,6 @@ with open('api_file_paths.yml','r') as f:
     except yaml.YAMLError as e:
         print(e)
 
-dir = r'file://' + os.path.join(os.getcwd(), 'model').replace('\\','/')
-model = mlflow.pytorch.load_model(dir)
+def deploy_model():
+    dir = r'file://' + os.path.join(os.getcwd(), 'model').replace('\\','/')
+    model = mlflow.pytorch.load_model(dir)

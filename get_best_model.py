@@ -20,11 +20,11 @@ destination_folder = file_paths['model_destination'][0]
 seq_len = file_paths['seq_len'][0]
 experiment_name = f'German Power - GRU ({seq_len} Day)'
 
+if __name__ == '__main__':
+    client = mlflow.tracking.MlflowClient(tracking_uri = tracking_uri)
 
-client = mlflow.tracking.MlflowClient(tracking_uri = tracking_uri)
+    experiment_id = client.get_experiment_by_name(experiment_name).experiment_id
+    runs = client.search_runs(experiment_id, order_by = ['metrics.Test_MSE'])
 
-experiment_id = client.get_experiment_by_name(experiment_name).experiment_id
-runs = client.search_runs(experiment_id, order_by = ['metrics.Test_MSE'])
-
-best_run_id = runs[0].info.run_id
-client.download_artifacts(best_run_id, 'model', destination_folder)
+    best_run_id = runs[0].info.run_id
+    client.download_artifacts(best_run_id, 'model', destination_folder)
