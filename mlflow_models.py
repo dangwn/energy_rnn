@@ -81,6 +81,8 @@ testset = MyDataSet(X[train_size:],y[train_size:])
 trainloader = torch.utils.data.DataLoader(trainset, shuffle = True, batch_size = batch_size)
 testloader = torch.utils.data.DataLoader(testset, shuffle = True, batch_size = batch_size)
 
+print(next(iter(trainloader))[0].shape)
+
 
 #%%
 #--------------------------------------------------------------------------------------------------
@@ -88,67 +90,73 @@ testloader = torch.utils.data.DataLoader(testset, shuffle = True, batch_size = b
 #--------------------------------------------------------------------------------------------------
 mlflow.set_tracking_uri(tracking_uri)
 mlflow.set_experiment(experiment_name)
-num_experiments = 25
+num_experiments = 1
 
 #%%
 #--------------------------------------------------------------------------------------------------
 # Create and Train model
 #--------------------------------------------------------------------------------------------------
-gru_size = 64
-gru_layers = 3
-hidden_size = 64
-num_hidden = 1
-lr = 1e-3
-num_epochs = 10
+for i in range(num_experiments):
+    print('===========================')
+    print(f'Starting experiment [{i+1}]')        
+    with mlflow.start_run():    
+        gru_size = np.random.randint(32,129)
+        gru_layers = np.random.randint(1,5)
+        hidden_size = np.random.randint(32,129)
+        num_hidden = np.random.randint(1,4)
+        lr = np.random.uniform(0,1e-3)
+        num_epochs = np.random.randint(5,16)
 
-net = GRU(
-    input_size = len(keys),
-    gru_size = gru_size,
-    gru_layers = gru_layers,
-    hidden_size = hidden_size,
-    num_hidden = num_hidden,
-    output_size = 1,
-    device = device
-).to(device)
+        net = GRU(
+            input_size = len(keys),
+            gru_size = gru_size,
+            gru_layers = gru_layers,
+            hidden_size = hidden_size,
+            num_hidden = num_hidden,
+            output_size = 1,
+            device = device
+        ).to(device)
 
-optimizer = torch.optim.Adam(net.parameters(), lr = lr)
-criterion = torch.nn.MSELoss()
-val_metrics = {'MSE' : MeanSquaredError()}
+        optimizer = torch.optim.Adam(net.parameters(), lr = lr)
+        criterion = torch.nn.MSELoss()
+        val_metrics = {'MSE' : MeanSquaredError()}
 
+        print('Training model...')
 
-train_model(
-    net,
-    trainloader = trainloader,
-    testloader = testloader,
-    optimizer = optimizer,
-    criterion = criterion,
-    val_metrics = val_metrics,
-    num_epochs = num_epochs,
-    device = device
-)
+        train_model(
+            net,
+            trainloader = trainloader,
+            testloader = testloader,
+            optimizer = optimizer,
+            criterion = criterion,
+            val_metrics = val_metrics,
+            num_epochs = num_epochs,
+            device = device
+        )
 
-total_loss = 0
-for t in testloader:
-    y_hat = net(t[0])
-    loss = torch.nn.MSELoss(reduction = 'none')
-    loss_result = torch.sum(loss(y_hat,t[1])).item()
-    total_loss += loss_result
-TestMSE = total_loss/(len(X_raw)-train_size)
+        total_loss = 0
+        for t in testloader:
+            y_hat = net(t[0])
+            loss = torch.nn.MSELoss(reduction = 'none')
+            loss_result = torch.sum(loss(y_hat,t[1])).item()
+            total_loss += loss_result
+        TestMSE = total_loss/(len(X_raw)-train_size)
+        
+        print('Logging artifacts')
 
-mlflow.log_param('gru_size',gru_size)
-mlflow.log_param('gru_layers',gru_layers)
-mlflow.log_param('hidden_size',hidden_size)
-mlflow.log_param('num_hidden',num_hidden)
-mlflow.log_param('lr',lr)
-mlflow.log_param('num_epochs',num_epochs)
+        mlflow.log_param('gru_size',gru_size)
+        mlflow.log_param('gru_layers',gru_layers)
+        mlflow.log_param('hidden_size',hidden_size)
+        mlflow.log_param('num_hidden',num_hidden)
+        mlflow.log_param('lr',lr)
+        mlflow.log_param('num_epochs',num_epochs)
 
-mlflow.log_metric('Test MSE',TestMSE)
+        mlflow.log_metric('Test MSE',TestMSE)
 
-net.to('cpu')
-net.device = 'cpu'
+        net.to('cpu')
+        net.device = 'cpu'
 
-print(net.device)
-mlflow.pytorch.log_model(net,'model')
+        mlflow.pytorch.log_model(net,'model')
 
 #%%
 #--------------------------------------------------------------------------------------------------

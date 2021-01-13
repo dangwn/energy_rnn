@@ -54,9 +54,10 @@ class GRU(nn.Module):
         x , _ = self.gru(x, h0)
         
         out = x[:,-1,:]
+
+        out = F.relu(self.fc_in(out))
         for i in range(self.num_hidden):
             out = F.relu(self.fc_hidden(out))
-        out = F.relu(self.fc_in(out))
         
         return self.fc_out(out)
 
@@ -101,5 +102,4 @@ def train_model(
             
     
     trainer.run(trainloader, max_epochs = num_epochs)
-
 
