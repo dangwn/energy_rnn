@@ -36,6 +36,7 @@ def query_model():
     '''
     try:
         data = json.loads(request.data)
+        print("Response recieved")
         X = torch.tensor(data['data'],dtype = torch.float32)
         num_pred = data['num_pred']
         pred = deploy_model(X, num_pred)
@@ -47,4 +48,5 @@ def query_model():
 
 
 # Serve the model to port 6000
+print('Serving api...')
 waitress.serve(app, host='0.0.0.0', port = 6000)

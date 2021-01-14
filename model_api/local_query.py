@@ -14,7 +14,7 @@ raw_data = [1391.85405,1330.26226,1620.97758,1643.72307,1639.08265, 1628.47979,
 
 figures = [[[i] for i in raw_data]]
 
-data = json.dumps({'data' : figures, 'num_pred' : 3})
+data = json.dumps({'data' : figures, 'num_pred' : 4})
 
 r = requests.post('http://127.0.0.1:6000/invocations',data = data)
 print('Status code:', r.status_code)
