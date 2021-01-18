@@ -1,5 +1,5 @@
 language:
-  - python
+  - generic
 
 services:
   - docker
