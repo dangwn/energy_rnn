@@ -1,5 +1,6 @@
 pytest
-pytorch
+#pytorch
+torch
 torchvision
 ignite
 mlflow
