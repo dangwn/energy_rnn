@@ -11,7 +11,7 @@ before_deploy:
   - docker login --username "$DOCKERUSER" --password "$DOCKERPWD"
 
 deploy:
-  provider : script
+  provider: script
   script: docker image push dangawne/energy_rnn
   on:
     branch: main
