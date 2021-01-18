@@ -8,7 +8,7 @@ before_install:
   - docker build -t dangawne/energy_rnn
 
 before_deploy:
-  - docker login --usernam "$DOCKERUSER" --password "$DOCKERPWD"
+  - docker login --username "$DOCKERUSER" --password "$DOCKERPWD"
 
 deploy:
   provider : script
