@@ -12,6 +12,6 @@ before_deploy:
 
 deploy:
   provider: script
-  script: docker image push dangawne/energy_rnn
+  script: docker image push dangawne/energy_gru
   on:
     branch: main
