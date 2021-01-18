@@ -7,11 +7,6 @@ services:
 before_install:
   - docker build -f ./dockerfile_gruserver -t dangawne/energy_gru .
 
-before_deploy:
-  - docker login --username "$DOCKERUSER" --password "$DOCKERPWD"
-
 deploy:
-  provider: script
-  script: docker image push dangawne/energy_gru
-  on:
-    branch: main
+  - docker login --username "$DOCKERUSER" --password "$DOCKERPWD"
+  - docker image push dangawne/energy_gru
