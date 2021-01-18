@@ -1,0 +1,17 @@
+language:
+  - python
+
+services:
+  - docker
+
+before_install:
+  - docker build -t dangawne/energy_rnn
+
+before_deploy:
+  - docker login --usernam "$DOCKERUSER" --password "$DOCKERPWD"
+
+deploy:
+  provider : script
+  script: docker image push dangawne/energy_rnn
+  on:
+    branch: main
